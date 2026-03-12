@@ -4,10 +4,11 @@ import { Card, CardFooter } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { ArrowUp, MessageSquare, ExternalLink, Search, Layers } from 'lucide-react';
+import { ArrowUp, MessageSquare, ExternalLink, Search, Layers, Clock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { App, Category } from '../types';
 import { User } from '@supabase/supabase-js';
+import { isFastBuild } from '../lib/utils';
 
 // Rich mock data fallback for preview environments
 const MOCK_APPS: App[] = [
@@ -21,6 +22,7 @@ const MOCK_APPS: App[] = [
     builder_id: 'user1',
     category: { id: 'c1', name: 'Developer Tools', slug: 'developer-tools' },
     tech_stack: ['React', 'Rust', 'OpenAI'],
+    build_time: '3 hours',
     votes_count: 342,
     comments_count: 28,
     created_at: new Date(Date.now() - 100000000).toISOString(),
@@ -35,6 +37,7 @@ const MOCK_APPS: App[] = [
     builder_id: 'user2',
     category: { id: 'c2', name: 'Design', slug: 'design' },
     tech_stack: ['Next.js', 'Tailwind', 'Figma API'],
+    build_time: 'a weekend',
     votes_count: 289,
     comments_count: 15,
     created_at: new Date(Date.now() - 50000000).toISOString(),
@@ -49,6 +52,7 @@ const MOCK_APPS: App[] = [
     builder_id: 'user3',
     category: { id: 'c3', name: 'Analytics', slug: 'analytics' },
     tech_stack: ['Python', 'PostgreSQL', 'LangChain'],
+    build_time: '2 weeks',
     votes_count: 456,
     comments_count: 42,
     created_at: new Date(Date.now() - 200000000).toISOString(),
@@ -63,6 +67,7 @@ const MOCK_APPS: App[] = [
     builder_id: 'user4',
     category: { id: 'c1', name: 'Developer Tools', slug: 'developer-tools' },
     tech_stack: ['TypeScript', 'AST', 'Gemini'],
+    build_time: '45 mins',
     votes_count: 120,
     comments_count: 5,
     created_at: new Date().toISOString(),
@@ -110,9 +115,28 @@ export function Explore() {
     }
   }
 
+  const REQUESTED_CATEGORIES = [
+    'AI Tools',
+    'Productivity',
+    'Developer Tools',
+    'Games',
+    'Crypto',
+    'Design',
+    'Automation'
+  ];
+
   async function fetchCategories() {
     const { data } = await supabase.from('categories').select('*').order('name');
-    if (data) setCategories(data);
+    if (data && data.length > 0) {
+      setCategories(data);
+    } else {
+      // Fallback categories
+      setCategories(REQUESTED_CATEGORIES.map(name => ({
+        id: name.toLowerCase().replace(/\s+/g, '-'),
+        name,
+        slug: name.toLowerCase().replace(/\s+/g, '-')
+      })));
+    }
   }
 
   async function fetchApps() {
@@ -311,12 +335,22 @@ export function Explore() {
                   <div className="flex-1 min-w-0">
                     <h3 className="text-xl font-bold text-zinc-900 truncate">{app.name}</h3>
                     <p className="text-sm text-zinc-500 truncate">{app.tagline}</p>
-                    {app.category && (
-                      <div className="flex items-center gap-1 mt-2 text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                        <Layers className="w-3 h-3" />
-                        {app.category.name}
-                      </div>
-                    )}
+                    <div className="flex items-center gap-3 mt-2">
+                      {app.category && (
+                        <div className="flex items-center gap-1 text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                          <Layers className="w-3 h-3" />
+                          {app.category.name}
+                        </div>
+                      )}
+                      {app.build_time && (
+                        <div className={`flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                          isFastBuild(app.build_time) ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-600'
+                        }`}>
+                          <Clock className="w-3 h-3" />
+                          Built in {app.build_time}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 

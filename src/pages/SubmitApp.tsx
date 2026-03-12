@@ -110,7 +110,7 @@ export function SubmitApp() {
       // If no user, we can simulate a successful submission for preview purposes
       // or throw an error. Let's throw an error to encourage login.
       if (!user) {
-        throw new Error('You must be logged in to submit an app.');
+        throw new Error('You must be logged in to launch an app.');
       }
 
       // 2. Upload Logo
@@ -152,8 +152,8 @@ export function SubmitApp() {
         navigate(`/app/${newApp.id}`);
       }
     } catch (err: any) {
-      console.error('Submission error:', err);
-      setError(err.message || 'Failed to submit app. Please try again.');
+      console.error('Launch error:', err);
+      setError(err.message || 'Failed to launch app. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -162,8 +162,8 @@ export function SubmitApp() {
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-12">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Submit your App</h1>
-        <p className="text-zinc-500">Share what you've built with the VibeHub community.</p>
+        <h1 className="text-3xl font-bold tracking-tight">Launch your App</h1>
+        <p className="text-zinc-500">Share what you've built with the Shipyard community.</p>
       </div>
 
       {error && (
@@ -188,7 +188,7 @@ export function SubmitApp() {
                   </label>
                   <Input 
                     id="name" 
-                    placeholder="e.g. VibeHub" 
+                    placeholder="e.g. Shipyard" 
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required 
@@ -387,7 +387,7 @@ export function SubmitApp() {
             </div>
 
             <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-              {isSubmitting ? 'Submitting App...' : 'Submit App'}
+              {isSubmitting ? 'Launching App...' : 'Launch App'}
             </Button>
           </form>
         </CardContent>

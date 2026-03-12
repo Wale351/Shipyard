@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Card, CardContent, CardHeader, CardFooter } from '../components/ui/Card';
-import { ArrowUp, ExternalLink, Github, MessageSquare, Clock, Layers, User as UserIcon, Send } from 'lucide-react';
+import { ArrowUp, ExternalLink, Github, MessageSquare, Clock, Layers, User as UserIcon, Send, Share2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { App, Comment, User } from '../types';
 
@@ -235,7 +235,12 @@ export function AppDetail() {
             referrerPolicy="no-referrer"
           />
           <div className="space-y-3 flex-1">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">{app.name}</h1>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">{app.name}</h1>
+              <Badge variant="secondary" className="bg-blue-50 text-blue-600 border border-blue-100">
+                Launched on Shipyard
+              </Badge>
+            </div>
             <p className="text-lg sm:text-xl text-zinc-500 font-medium">{app.tagline}</p>
             
             <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -279,6 +284,19 @@ export function AppDetail() {
             <a href={app.website_url} target="_blank" rel="noopener noreferrer">
               Visit App <ExternalLink className="w-4 h-4 ml-2" />
             </a>
+          </Button>
+
+          <Button 
+            variant="outline"
+            size="lg" 
+            className="w-full md:w-40 h-14 rounded-xl shadow-sm"
+            onClick={() => {
+              const text = `I just launched on Shipyard 🚀\n\nCheck out ${app.name}: ${app.tagline}\n${window.location.href}`;
+              navigator.clipboard.writeText(text);
+              alert('Share text copied to clipboard!');
+            }}
+          >
+            Share <Share2 className="w-4 h-4 ml-2" />
           </Button>
         </div>
       </section>

@@ -15,6 +15,7 @@ CREATE TABLE public.users (
   website_url TEXT,
   twitter_handle TEXT,
   github_handle TEXT,
+  role TEXT DEFAULT 'user' NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
@@ -43,6 +44,8 @@ CREATE TABLE public.apps (
   tech_stack TEXT[] DEFAULT '{}',
   screenshots TEXT[] DEFAULT '{}',
   build_time TEXT,
+  status TEXT DEFAULT 'pending' NOT NULL,
+  is_featured BOOLEAN DEFAULT false NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 

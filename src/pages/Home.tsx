@@ -69,7 +69,7 @@ const MOCK_APPS: App[] = [
   }
 ];
 
-const CATEGORIES = ['All', 'Developer Tools', 'Design', 'Analytics', 'Productivity', 'AI'];
+const CATEGORIES = ['All', 'AI Tools', 'Productivity', 'Developer Tools', 'Games', 'Crypto', 'Design', 'Automation'];
 
 export function Home() {
   const [apps, setApps] = useState<App[]>([]);
@@ -239,16 +239,27 @@ export function Home() {
       }
     });
 
+  const featuredApps = filteredApps.filter(app => app.is_featured);
+  const regularApps = filteredApps.filter(app => !app.is_featured);
+
   return (
     <div className="space-y-10 pb-12">
       {/* Header Section */}
       <section className="text-center py-12 space-y-4">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-zinc-900">
-          Discover apps built with <span className="text-zinc-400">vibe</span>
+          Welcome to Shipyard
         </h1>
         <p className="text-lg text-zinc-500 max-w-2xl mx-auto">
-          The premier directory for showcasing and discovering the next generation of AI-powered applications.
+          A place where builders launch apps, experiments, and AI projects.
         </p>
+        <div className="flex items-center justify-center gap-4 pt-4">
+          <Button asChild size="lg" className="rounded-full font-medium">
+            <Link to="/explore">Explore Apps</Link>
+          </Button>
+          <Button asChild variant="outline" size="lg" className="rounded-full font-medium">
+            <Link to="/submit">Launch Your App</Link>
+          </Button>
+        </div>
       </section>
 
       {/* Filters & Search Bar */}
@@ -301,17 +312,114 @@ export function Home() {
         </div>
       </section>
 
+      {/* Featured Apps Grid */}
+      {!loading && featuredApps.length > 0 && (
+        <section className="space-y-6">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center">
+              <Flame className="w-5 h-5" />
+            </div>
+            <h2 className="text-2xl font-bold text-zinc-900 tracking-tight">Featured Apps</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredApps.map((app) => (
+              <Card 
+                key={app.id} 
+                className="group flex flex-col h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-200/50 hover:border-amber-300 overflow-hidden bg-gradient-to-b from-amber-50/50 to-white border-amber-200/50"
+              >
+                <Link to={`/app/${app.id}`} className="flex-1 p-6 pb-0 space-y-4">
+                  <div className="flex items-start gap-4">
+                    <img 
+                      src={app.logo_url || `https://picsum.photos/seed/${app.id}/150/150`} 
+                      alt={`${app.name} logo`} 
+                      className="w-16 h-16 rounded-xl object-cover border border-amber-100 shadow-sm group-hover:scale-105 transition-transform duration-300"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-xl font-bold text-zinc-900 truncate">{app.name}</h3>
+                        <div className="flex items-center gap-1 text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full shrink-0">
+                          Featured
+                        </div>
+                      </div>
+                      <p className="text-sm text-zinc-500 truncate">{app.tagline}</p>
+                      {app.category && (
+                        <div className="flex items-center gap-1 mt-2 text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                          <Layers className="w-3 h-3" />
+                          {app.category.name}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-zinc-600 line-clamp-2 leading-relaxed">
+                    {app.description}
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {app.tech_stack?.slice(0, 3).map(tech => (
+                      <Badge key={tech} variant="secondary" className="bg-white/80 text-zinc-600 hover:bg-white border border-amber-100">
+                        {tech}
+                      </Badge>
+                    ))}
+                    {(app.tech_stack?.length || 0) > 3 && (
+                      <Badge variant="secondary" className="bg-white/80 text-zinc-600 border border-amber-100">
+                        +{(app.tech_stack?.length || 0) - 3}
+                      </Badge>
+                    )}
+                  </div>
+                </Link>
+
+                <CardFooter className="p-6 pt-6 mt-auto border-t border-amber-100/50 flex items-center justify-between bg-amber-50/30">
+                  <div className="flex items-center gap-4">
+                    <button 
+                      onClick={(e) => handleVote(e, app.id)}
+                      disabled={votingAppId === app.id}
+                      className={`flex items-center gap-1.5 transition-colors group/btn ${
+                        userVotes.has(app.id) ? 'text-zinc-900' : 'text-zinc-600 hover:text-zinc-900'
+                      }`}
+                    >
+                      <div className={`p-1.5 rounded-md transition-colors ${
+                        userVotes.has(app.id) 
+                          ? 'bg-zinc-900 text-white border-zinc-900' 
+                          : 'bg-white border border-zinc-200 group-hover/btn:border-zinc-400'
+                      }`}>
+                        <ArrowUp className="w-4 h-4" />
+                      </div>
+                      <span className="font-semibold text-sm">{app.votes_count || 0}</span>
+                    </button>
+                    <Link to={`/app/${app.id}#comments`} className="flex items-center gap-1.5 text-zinc-500 hover:text-zinc-900 transition-colors">
+                      <MessageSquare className="w-4 h-4" />
+                      <span className="font-medium text-sm">{app.comments_count || 0}</span>
+                    </Link>
+                  </div>
+                  
+                  <Button asChild size="sm" className="rounded-full px-4 font-medium shadow-sm bg-amber-600 hover:bg-amber-700 text-white">
+                    <a href={app.website_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                      Try App <ExternalLink className="w-3 h-3 ml-1.5" />
+                    </a>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* App Grid */}
-      <section>
+      <section className="space-y-6">
+        {!loading && featuredApps.length > 0 && (
+          <h2 className="text-2xl font-bold text-zinc-900 tracking-tight">All Apps</h2>
+        )}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map(i => (
               <div key={i} className="h-64 bg-zinc-100 rounded-2xl animate-pulse" />
             ))}
           </div>
-        ) : filteredApps.length > 0 ? (
+        ) : regularApps.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredApps.map((app) => (
+            {regularApps.map((app) => (
               <Card 
                 key={app.id} 
                 className="group flex flex-col h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-200/50 hover:border-zinc-300 overflow-hidden bg-white"

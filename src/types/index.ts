@@ -7,6 +7,7 @@ export interface User {
   website_url?: string;
   twitter_handle?: string;
   github_handle?: string;
+  role?: string;
   created_at: string;
 }
 
@@ -29,6 +30,8 @@ export interface App {
   tech_stack: string[];
   screenshots?: string[];
   build_time?: string;
+  status?: string;
+  is_featured?: boolean;
   created_at: string;
   
   // Joined relations for UI
