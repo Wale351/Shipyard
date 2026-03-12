@@ -1,27 +1,45 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Plus, User, Shuffle, Shield } from 'lucide-react';
+import { Search, Plus, User, Shuffle, Shield, LogOut } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { Magnetic } from '../ui/Magnetic';
 import { supabase } from '../../lib/supabase';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
 export function Navbar() {
   const navigate = useNavigate();
   const [isRandomizing, setIsRandomizing] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
 
   useEffect(() => {
-    checkAdminStatus();
+    checkUser();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        checkAdminStatus(session.user.id);
+      } else {
+        setIsAdmin(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  async function checkAdminStatus() {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+  async function checkUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    setUser(user);
+    if (user) {
+      checkAdminStatus(user.id);
+    }
+  }
 
+  async function checkAdminStatus(userId: string) {
+    try {
       const { data: profile } = await supabase
         .from('users')
         .select('role')
-        .eq('id', user.id)
+        .eq('id', userId)
         .single();
 
       if (profile?.role === 'admin') {
@@ -31,6 +49,11 @@ export function Navbar() {
       console.error('Error checking admin status:', err);
     }
   }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
 
   const handleRandomApp = async () => {
     if (isRandomizing) return;
@@ -59,56 +82,55 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl leading-none">S</span>
-            </div>
-            <span className="font-bold text-xl tracking-tight">Shipyard</span>
-          </Link>
-          
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-600">
-            <Link to="/explore" className="hover:text-zinc-900 transition-colors">Explore</Link>
-            <Link to="/explore?sort=trending" className="hover:text-zinc-900 transition-colors">Trending</Link>
-            <Link to="/explore?sort=newest" className="hover:text-zinc-900 transition-colors">New Launches</Link>
-            <Link to="/leaderboard" className="hover:text-zinc-900 transition-colors">Builders</Link>
-            <Link to="/categories" className="hover:text-zinc-900 transition-colors">Categories</Link>
-            {isAdmin && (
-              <Link to="/admin" className="hover:text-zinc-900 transition-colors flex items-center gap-1.5 text-amber-600">
-                <Shield className="w-3.5 h-3.5" />
-                Admin
-              </Link>
-            )}
+    <header className="sticky top-0 z-50 w-full border-b border-charcoal/5 bg-offwhite/80 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
+        {/* Left Section */}
+        <div className="flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-charcoal/60">
+            <Link to="/explore" className="hover:text-charcoal transition-colors">Explore</Link>
+            <Link to="/categories" className="hover:text-charcoal transition-colors">Categories</Link>
           </nav>
         </div>
 
+        {/* Center Logo */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 bg-charcoal rounded-lg flex items-center justify-center group-hover:bg-ocean-mid transition-colors duration-300">
+              <span className="text-offwhite font-bold text-xl leading-none">S</span>
+            </div>
+            <span className="font-bold text-xl tracking-tight text-charcoal hidden sm:block">Shipyard</span>
+          </Link>
+        </div>
+
+        {/* Right Section */}
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-zinc-900 transition-colors" />
+          <div className="hidden lg:flex relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal/30 group-focus-within:text-charcoal transition-colors" />
             <input 
               type="text" 
-              placeholder="Search apps..." 
-              className="pl-9 pr-4 py-2 bg-zinc-100 border-transparent focus:bg-white focus:border-zinc-300 focus:ring-2 focus:ring-zinc-900/10 rounded-full text-sm outline-none w-64 transition-all"
+              placeholder="Search..." 
+              className="pl-9 pr-4 py-1.5 bg-charcoal/5 border-transparent focus:bg-white focus:border-charcoal/10 focus:ring-4 focus:ring-ocean-mid/5 rounded-full text-sm outline-none w-40 transition-all text-charcoal"
             />
           </div>
           
-          <Link to="/submit">
-            <Button size="sm" className="hidden sm:flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Launch App
-            </Button>
-          </Link>
-          
-          <Link to="/login">
-            <Button variant="ghost" size="sm" className="hidden sm:flex items-center gap-2 font-medium">
-              Login
-            </Button>
-            <Button variant="ghost" size="icon" className="sm:hidden rounded-full">
-              <User className="w-5 h-5" />
-            </Button>
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-2">
+              <Link to={`/profile/${user.user_metadata?.username || user.email?.split('@')[0]}`}>
+                <Button variant="ghost" size="icon" className="rounded-full text-charcoal/70 hover:bg-charcoal/5">
+                  <User className="w-5 h-5" />
+                </Button>
+              </Link>
+              <Button variant="ghost" size="icon" onClick={handleLogout} className="text-charcoal/40 hover:text-terracotta hover:bg-terracotta/5 rounded-full">
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
+          ) : (
+            <Link to="/login">
+              <Button variant="ghost" size="sm" className="font-medium text-charcoal/70 hover:text-charcoal hover:bg-charcoal/5 rounded-full">
+                Login
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </header>

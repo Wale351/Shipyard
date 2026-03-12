@@ -6,6 +6,7 @@ import { Button } from '../components/ui/Button';
 import { ArrowUp, MessageSquare, ExternalLink, Layers, Flame, Clock, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { App, Category } from '../types';
+import { AppCard } from '../components/ui/AppCard';
 import { User } from '@supabase/supabase-js';
 import { isFastBuild } from '../lib/utils';
 
@@ -122,7 +123,6 @@ export function Categories() {
   async function fetchCategories() {
     const { data } = await supabase.from('categories').select('name').order('name');
     if (data && data.length > 0) {
-      // Merge requested categories with DB categories, keeping requested ones first
       const dbCategories = data.map(c => c.name);
       const merged = [...new Set([...REQUESTED_CATEGORIES, ...dbCategories])];
       setCategories(merged);
@@ -153,13 +153,11 @@ export function Categories() {
         }));
         setApps(formattedApps);
       } else {
-        // Fallback to mock data if DB is empty
         const mockApps = MOCK_APPS.filter(app => app.category?.name === activeCategory);
         setApps(mockApps);
       }
     } catch (err) {
       console.error('Error fetching apps:', err);
-      // Fallback to mock data on error
       const mockApps = MOCK_APPS.filter(app => app.category?.name === activeCategory);
       setApps(mockApps);
     } finally {
@@ -167,10 +165,7 @@ export function Categories() {
     }
   }
 
-  const handleVote = async (e: React.MouseEvent, appId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
+  const handleVote = async (appId: string) => {
     if (!currentUser) {
       alert('Please sign in to upvote apps.');
       return;
@@ -210,7 +205,6 @@ export function Categories() {
     }
   };
 
-  // Filter and Sort Logic
   const sortedApps = [...apps].sort((a, b) => {
     if (sortBy === 'trending') {
       return (Number(b.trending_score) || 0) - (Number(a.trending_score) || 0);
@@ -222,179 +216,97 @@ export function Categories() {
   });
 
   return (
-    <div className="space-y-8 pb-12">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Categories</h1>
-          <p className="text-zinc-500 mt-2">Browse apps by category and discover new tools.</p>
-        </div>
+    <div className="space-y-12 pb-24 pt-12">
+      <div className="space-y-4">
+        <h1 className="text-5xl font-bold tracking-tighter text-charcoal">Collections</h1>
+        <p className="text-xl text-charcoal/40 font-medium">Curated experiments across the digital frontier.</p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-16">
         {/* Sidebar Categories */}
-        <div className="lg:w-64 shrink-0">
-          <div className="sticky top-24 space-y-1">
-            <h3 className="text-sm font-semibold text-zinc-900 uppercase tracking-wider mb-4 px-3">All Categories</h3>
-            <div className="flex flex-row lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-hide">
-              {categories.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-left whitespace-nowrap lg:whitespace-normal ${
-                    activeCategory === cat 
-                      ? 'bg-zinc-900 text-white shadow-sm' 
-                      : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+        <div className="lg:w-72 shrink-0">
+          <div className="sticky top-24 space-y-8">
+            <div className="space-y-4">
+              <h3 className="text-xs font-bold text-charcoal/30 uppercase tracking-[0.2em] px-4">Taxonomy</h3>
+              <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 no-scrollbar">
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`px-6 py-4 rounded-2xl text-sm font-bold transition-all text-left whitespace-nowrap lg:whitespace-normal ${
+                      activeCategory === cat 
+                        ? 'bg-charcoal text-offwhite shadow-2xl shadow-charcoal/10' 
+                        : 'text-charcoal/40 hover:bg-charcoal/5 hover:text-charcoal'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-200">
-            <h2 className="text-2xl font-bold text-zinc-900">{activeCategory}</h2>
+        <div className="flex-1 space-y-12">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 border-b border-charcoal/5">
+            <h2 className="text-3xl font-bold text-charcoal tracking-tight">{activeCategory}</h2>
             
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
-              <Button 
-                variant={sortBy === 'trending' ? 'default' : 'outline'} 
-                size="sm" 
+            <div className="flex items-center gap-2 bg-charcoal/5 p-1 rounded-xl">
+              <button
                 onClick={() => setSortBy('trending')}
-                className="rounded-full gap-2 whitespace-nowrap"
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
+                  sortBy === 'trending' ? 'bg-white text-charcoal shadow-sm' : 'text-charcoal/40 hover:text-charcoal'
+                }`}
               >
                 <Flame className="w-4 h-4" /> Trending
-              </Button>
-              <Button 
-                variant={sortBy === 'newest' ? 'default' : 'outline'} 
-                size="sm" 
+              </button>
+              <button
                 onClick={() => setSortBy('newest')}
-                className="rounded-full gap-2 whitespace-nowrap"
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
+                  sortBy === 'newest' ? 'bg-white text-charcoal shadow-sm' : 'text-charcoal/40 hover:text-charcoal'
+                }`}
               >
                 <Clock className="w-4 h-4" /> Newest
-              </Button>
-              <Button 
-                variant={sortBy === 'upvoted' ? 'default' : 'outline'} 
-                size="sm" 
+              </button>
+              <button
                 onClick={() => setSortBy('upvoted')}
-                className="rounded-full gap-2 whitespace-nowrap"
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
+                  sortBy === 'upvoted' ? 'bg-white text-charcoal shadow-sm' : 'text-charcoal/40 hover:text-charcoal'
+                }`}
               >
-                <Star className="w-4 h-4" /> Most Upvoted
-              </Button>
+                <Star className="w-4 h-4" /> Upvoted
+              </button>
             </div>
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="h-64 bg-zinc-100 rounded-2xl animate-pulse" />
+                <div key={i} className="h-72 bg-charcoal/5 rounded-[32px] animate-pulse" />
               ))}
             </div>
           ) : sortedApps.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {sortedApps.map((app) => (
-                <Card 
+                <AppCard 
                   key={app.id} 
-                  className="group flex flex-col h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-200/50 hover:border-zinc-300 overflow-hidden bg-white"
-                >
-                  <Link to={`/app/${app.id}`} className="flex-1 p-6 pb-0 space-y-4">
-                    <div className="flex items-start gap-4">
-                      <img 
-                        src={app.logo_url || `https://picsum.photos/seed/${app.id}/150/150`} 
-                        alt={`${app.name} logo`} 
-                        className="w-16 h-16 rounded-xl object-cover border border-zinc-100 shadow-sm group-hover:scale-105 transition-transform duration-300"
-                        referrerPolicy="no-referrer"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <h3 className="text-xl font-bold text-zinc-900 truncate">{app.name}</h3>
-                          {sortBy === 'trending' && app.trending_score !== undefined && (
-                            <div className="flex items-center gap-1 text-xs font-bold text-orange-500 bg-orange-50 px-2 py-0.5 rounded-full shrink-0">
-                              <Flame className="w-3 h-3" />
-                              {Number(app.trending_score).toFixed(1)}
-                            </div>
-                          )}
-                        </div>
-                        <p className="text-sm text-zinc-500 truncate">{app.tagline}</p>
-                        <div className="flex items-center gap-3 mt-2">
-                          {app.category && (
-                            <div className="flex items-center gap-1 text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                              <Layers className="w-3 h-3" />
-                              {app.category.name}
-                            </div>
-                          )}
-                          {app.build_time && (
-                            <div className={`flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${
-                              isFastBuild(app.build_time) ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-600'
-                            }`}>
-                              <Clock className="w-3 h-3" />
-                              Built in {app.build_time}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <p className="text-sm text-zinc-600 line-clamp-2 leading-relaxed">
-                      {app.description}
-                    </p>
-
-                    <div className="flex flex-wrap gap-2 pt-2">
-                      {app.tech_stack?.slice(0, 3).map(tech => (
-                        <Badge key={tech} variant="secondary" className="bg-zinc-100 text-zinc-600 hover:bg-zinc-200">
-                          {tech}
-                        </Badge>
-                      ))}
-                      {(app.tech_stack?.length || 0) > 3 && (
-                        <Badge variant="secondary" className="bg-zinc-100 text-zinc-600">
-                          +{(app.tech_stack?.length || 0) - 3}
-                        </Badge>
-                      )}
-                    </div>
-                  </Link>
-
-                  <CardFooter className="p-6 pt-6 mt-auto border-t border-zinc-100 flex items-center justify-between bg-zinc-50/50">
-                    <div className="flex items-center gap-4">
-                      <button 
-                        onClick={(e) => handleVote(e, app.id)}
-                        disabled={votingAppId === app.id}
-                        className={`flex items-center gap-1.5 transition-colors group/btn ${
-                          userVotes.has(app.id) ? 'text-zinc-900' : 'text-zinc-600 hover:text-zinc-900'
-                        }`}
-                      >
-                        <div className={`p-1.5 rounded-md transition-colors ${
-                          userVotes.has(app.id) 
-                            ? 'bg-zinc-900 text-white border-zinc-900' 
-                            : 'bg-white border border-zinc-200 group-hover/btn:border-zinc-400'
-                        }`}>
-                          <ArrowUp className="w-4 h-4" />
-                        </div>
-                        <span className="font-semibold text-sm">{app.votes_count || 0}</span>
-                      </button>
-                      <Link to={`/app/${app.id}#comments`} className="flex items-center gap-1.5 text-zinc-500 hover:text-zinc-900 transition-colors">
-                        <MessageSquare className="w-4 h-4" />
-                        <span className="font-medium text-sm">{app.comments_count || 0}</span>
-                      </Link>
-                    </div>
-                    
-                    <Button asChild size="sm" className="rounded-full px-4 font-medium shadow-sm">
-                      <a href={app.website_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                        Try App <ExternalLink className="w-3 h-3 ml-1.5" />
-                      </a>
-                    </Button>
-                  </CardFooter>
-                </Card>
+                  app={app} 
+                  isVoted={userVotes.has(app.id)}
+                  onVote={() => handleVote(app.id)}
+                  isVoting={votingAppId === app.id}
+                />
               ))}
             </div>
           ) : (
-            <div className="text-center py-24 bg-zinc-50 rounded-2xl border border-zinc-200 border-dashed">
-              <div className="bg-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-zinc-100">
-                <Layers className="w-5 h-5 text-zinc-400" />
+            <div className="text-center py-32 bg-charcoal/[0.02] rounded-[48px] border border-charcoal/5 border-dashed space-y-6">
+              <div className="bg-charcoal/5 w-20 h-20 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                <Layers className="w-8 h-8 text-charcoal/20" />
               </div>
-              <h3 className="text-lg font-bold text-zinc-900 mb-1">No apps found</h3>
-              <p className="text-zinc-500">There are no apps in the {activeCategory} category yet.</p>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-charcoal">No artifacts found</h3>
+                <p className="text-charcoal/40 font-medium">The {activeCategory} collection is currently empty.</p>
+              </div>
             </div>
           )}
         </div>

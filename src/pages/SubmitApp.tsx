@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
-import { ImagePlus, Link as LinkIcon, Github, FileText, Layers, Clock, X } from 'lucide-react';
+import { ImagePlus, Link as LinkIcon, Github, FileText, Layers, Clock, X, Zap } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Category } from '../types';
 
@@ -160,224 +160,266 @@ export function SubmitApp() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 pb-12">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Launch your App</h1>
-        <p className="text-zinc-500">Share what you've built with the Shipyard community.</p>
+    <div className="max-w-4xl mx-auto space-y-16 pb-24 pt-12">
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-cobalt text-offwhite rounded-2xl flex items-center justify-center shadow-xl shadow-cobalt/20">
+            <Zap className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight text-charcoal">Deploy to Shipyard</h1>
+            <p className="text-charcoal/40 font-medium">Share your creation with the vanguard of digital builders.</p>
+          </div>
+        </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg border border-red-100 text-sm">
+        <div className="bg-red-50 text-red-600 p-6 rounded-[24px] border border-red-100 text-sm font-bold uppercase tracking-widest">
           {error}
         </div>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>App Details</CardTitle>
-          <CardDescription>Provide the core information about your application.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Basic Info */}
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-medium leading-none">
-                    App Name <span className="text-red-500">*</span>
-                  </label>
-                  <Input 
-                    id="name" 
-                    placeholder="e.g. Shipyard" 
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required 
-                  />
-                </div>
+      <div className="bg-white p-10 md:p-12 rounded-[40px] border border-charcoal/5 shadow-2xl shadow-charcoal/5">
+        <form onSubmit={handleSubmit} className="space-y-12">
+          {/* Section: Identity */}
+          <div className="space-y-8">
+            <div className="flex items-center gap-4">
+              <div className="w-1.5 h-6 bg-cobalt rounded-full" />
+              <h2 className="text-xl font-bold text-charcoal uppercase tracking-widest">Identity</h2>
+            </div>
 
-                <div className="space-y-2">
-                  <label htmlFor="category" className="text-sm font-medium leading-none flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-zinc-500" />
-                    Category <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    id="category"
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-                    required
-                  >
-                    {categories.length === 0 && <option value="">Loading categories...</option>}
-                    {categories.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="tagline" className="text-sm font-medium leading-none">
-                  Tagline <span className="text-red-500">*</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <label htmlFor="name" className="text-xs font-bold text-charcoal/40 uppercase tracking-widest px-1">
+                  App Name <span className="text-red-500">*</span>
                 </label>
-                <Input 
-                  id="tagline" 
-                  placeholder="A short, catchy description (max 60 chars)" 
-                  maxLength={60} 
-                  value={tagline}
-                  onChange={(e) => setTagline(e.target.value)}
+                <input 
+                  id="name" 
+                  placeholder="e.g. Shipyard" 
+                  className="w-full h-14 px-6 rounded-2xl bg-charcoal/5 border-transparent focus:bg-white focus:border-charcoal/10 focus:ring-4 focus:ring-cobalt/5 outline-none transition-all text-charcoal font-bold"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required 
                 />
               </div>
 
-              <div className="space-y-2">
-                <label htmlFor="description" className="text-sm font-medium leading-none flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-zinc-500" />
-                  Full Description <span className="text-red-500">*</span>
+              <div className="space-y-3">
+                <label htmlFor="category" className="text-xs font-bold text-charcoal/40 uppercase tracking-widest px-1">
+                  Taxonomy <span className="text-red-500">*</span>
                 </label>
-                <textarea 
-                  id="description" 
-                  className="flex min-h-[120px] w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-                  placeholder="Tell us more about what your app does, how you built it, and why it's awesome."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                <select
+                  id="category"
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                  className="w-full h-14 px-6 rounded-2xl bg-charcoal/5 border-transparent focus:bg-white focus:border-charcoal/10 focus:ring-4 focus:ring-cobalt/5 outline-none transition-all text-charcoal font-bold appearance-none cursor-pointer"
                   required
-                />
+                >
+                  {categories.length === 0 && <option value="">Loading categories...</option>}
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
-            {/* Links */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-zinc-100">
-              <div className="space-y-2">
-                <label htmlFor="url" className="text-sm font-medium leading-none flex items-center gap-2">
-                  <LinkIcon className="w-4 h-4 text-zinc-500" />
-                  Website URL <span className="text-red-500">*</span>
+            <div className="space-y-3">
+              <label htmlFor="tagline" className="text-xs font-bold text-charcoal/40 uppercase tracking-widest px-1">
+                Mission Statement <span className="text-red-500">*</span>
+              </label>
+              <input 
+                id="tagline" 
+                placeholder="A short, catchy description (max 60 chars)" 
+                maxLength={60} 
+                className="w-full h-14 px-6 rounded-2xl bg-charcoal/5 border-transparent focus:bg-white focus:border-charcoal/10 focus:ring-4 focus:ring-cobalt/5 outline-none transition-all text-charcoal font-bold"
+                value={tagline}
+                onChange={(e) => setTagline(e.target.value)}
+                required 
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label htmlFor="description" className="text-xs font-bold text-charcoal/40 uppercase tracking-widest px-1">
+                Full Manifest <span className="text-red-500">*</span>
+              </label>
+              <textarea 
+                id="description" 
+                className="w-full min-h-[160px] p-6 rounded-2xl bg-charcoal/5 border-transparent focus:bg-white focus:border-charcoal/10 focus:ring-4 focus:ring-cobalt/5 outline-none transition-all text-charcoal font-medium leading-relaxed"
+                placeholder="Tell us more about what your app does, how you built it, and why it's awesome."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Section: Connectivity */}
+          <div className="space-y-8 pt-12 border-t border-charcoal/5">
+            <div className="flex items-center gap-4">
+              <div className="w-1.5 h-6 bg-cobalt rounded-full" />
+              <h2 className="text-xl font-bold text-charcoal uppercase tracking-widest">Connectivity</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <label htmlFor="url" className="text-xs font-bold text-charcoal/40 uppercase tracking-widest px-1">
+                  Live URL <span className="text-red-500">*</span>
                 </label>
-                <Input 
+                <input 
                   id="url" 
                   type="url" 
                   placeholder="https://..." 
+                  className="w-full h-14 px-6 rounded-2xl bg-charcoal/5 border-transparent focus:bg-white focus:border-charcoal/10 focus:ring-4 focus:ring-cobalt/5 outline-none transition-all text-charcoal font-bold"
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
                   required 
                 />
               </div>
               
-              <div className="space-y-2">
-                <label htmlFor="github" className="text-sm font-medium leading-none flex items-center gap-2">
-                  <Github className="w-4 h-4 text-zinc-500" />
-                  GitHub URL (Optional)
+              <div className="space-y-3">
+                <label htmlFor="github" className="text-xs font-bold text-charcoal/40 uppercase tracking-widest px-1">
+                  Source Code (Optional)
                 </label>
-                <Input 
+                <input 
                   id="github" 
                   type="url" 
                   placeholder="https://github.com/..." 
+                  className="w-full h-14 px-6 rounded-2xl bg-charcoal/5 border-transparent focus:bg-white focus:border-charcoal/10 focus:ring-4 focus:ring-cobalt/5 outline-none transition-all text-charcoal font-bold"
                   value={githubUrl}
                   onChange={(e) => setGithubUrl(e.target.value)}
                 />
               </div>
             </div>
+          </div>
 
-            {/* Tech Stack & Build Time */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-zinc-100">
-              <div className="space-y-2">
-                <label htmlFor="techStack" className="text-sm font-medium leading-none">
+          {/* Section: Technical Specs */}
+          <div className="space-y-8 pt-12 border-t border-charcoal/5">
+            <div className="flex items-center gap-4">
+              <div className="w-1.5 h-6 bg-cobalt rounded-full" />
+              <h2 className="text-xl font-bold text-charcoal uppercase tracking-widest">Technical Specs</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <label htmlFor="techStack" className="text-xs font-bold text-charcoal/40 uppercase tracking-widest px-1">
                   Tech Stack
                 </label>
-                <div className="flex flex-wrap gap-2 mb-2">
+                <div className="flex flex-wrap gap-2 mb-3">
                   {techStack.map(tag => (
-                    <span key={tag} className="inline-flex items-center gap-1 bg-zinc-100 text-zinc-800 px-2.5 py-1 rounded-md text-sm">
+                    <span key={tag} className="inline-flex items-center gap-2 bg-charcoal text-offwhite px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest">
                       {tag}
-                      <button type="button" onClick={() => removeTechTag(tag)} className="text-zinc-500 hover:text-zinc-900">
+                      <button type="button" onClick={() => removeTechTag(tag)} className="text-offwhite/50 hover:text-offwhite">
                         <X className="w-3 h-3" />
                       </button>
                     </span>
                   ))}
                 </div>
-                <Input 
+                <input 
                   id="techStack" 
-                  placeholder="Type a technology and press Enter (e.g. React, Supabase)" 
+                  placeholder="Type and press Enter..." 
+                  className="w-full h-14 px-6 rounded-2xl bg-charcoal/5 border-transparent focus:bg-white focus:border-charcoal/10 focus:ring-4 focus:ring-cobalt/5 outline-none transition-all text-charcoal font-bold"
                   value={techStackInput}
                   onChange={(e) => setTechStackInput(e.target.value)}
                   onKeyDown={handleTechStackKeyDown}
                 />
               </div>
 
-              <div className="space-y-2">
-                <label htmlFor="buildTime" className="text-sm font-medium leading-none flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-zinc-500" />
-                  Build Time
+              <div className="space-y-3">
+                <label htmlFor="buildTime" className="text-xs font-bold text-charcoal/40 uppercase tracking-widest px-1">
+                  Build Duration
                 </label>
-                <Input 
+                <input 
                   id="buildTime" 
                   placeholder="e.g. 48 hours, 2 weeks" 
+                  className="w-full h-14 px-6 rounded-2xl bg-charcoal/5 border-transparent focus:bg-white focus:border-charcoal/10 focus:ring-4 focus:ring-cobalt/5 outline-none transition-all text-charcoal font-bold"
                   value={buildTime}
                   onChange={(e) => setBuildTime(e.target.value)}
                 />
               </div>
             </div>
+          </div>
 
-            {/* Media Uploads */}
-            <div className="space-y-6 pt-4 border-t border-zinc-100">
-              <div className="space-y-2">
-                <label className="text-sm font-medium leading-none flex items-center gap-2">
-                  <ImagePlus className="w-4 h-4 text-zinc-500" />
-                  App Logo <span className="text-red-500">*</span>
+          {/* Section: Visuals */}
+          <div className="space-y-8 pt-12 border-t border-charcoal/5">
+            <div className="flex items-center gap-4">
+              <div className="w-1.5 h-6 bg-cobalt rounded-full" />
+              <h2 className="text-xl font-bold text-charcoal uppercase tracking-widest">Visuals</h2>
+            </div>
+
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-charcoal/40 uppercase tracking-widest px-1">
+                  Artifact Logo <span className="text-red-500">*</span>
                 </label>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-8">
                   {logoPreview ? (
-                    <div className="relative w-16 h-16 rounded-xl border border-zinc-200 overflow-hidden">
+                    <div className="relative w-24 h-24 rounded-[24px] border-4 border-white shadow-2xl overflow-hidden bg-charcoal/5">
                       <img src={logoPreview} alt="Logo preview" className="w-full h-full object-cover" />
                       <button 
                         type="button"
                         onClick={() => { setLogoFile(null); setLogoPreview(null); }}
-                        className="absolute top-0 right-0 bg-black/50 text-white p-1 rounded-bl-lg hover:bg-black/70"
+                        className="absolute top-1 right-1 bg-charcoal/80 text-white p-1.5 rounded-lg hover:bg-charcoal"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
                   ) : (
-                    <div className="w-16 h-16 rounded-xl border border-zinc-200 border-dashed flex items-center justify-center bg-zinc-50">
-                      <ImagePlus className="w-6 h-6 text-zinc-400" />
+                    <div className="w-24 h-24 rounded-[24px] border-2 border-charcoal/5 border-dashed flex items-center justify-center bg-charcoal/[0.02]">
+                      <ImagePlus className="w-8 h-8 text-charcoal/10" />
                     </div>
                   )}
                   <div className="flex-1">
-                    <Input 
+                    <input 
                       type="file" 
                       accept="image/*" 
                       onChange={handleLogoChange}
                       required={!logoFile}
-                      className="cursor-pointer"
+                      className="hidden"
+                      id="logo-upload"
                     />
-                    <p className="text-xs text-zinc-500 mt-1">Recommended size: 256x256px. Max 2MB.</p>
+                    <label 
+                      htmlFor="logo-upload"
+                      className="inline-flex items-center justify-center h-12 px-8 rounded-xl bg-charcoal/5 text-charcoal text-xs font-bold uppercase tracking-widest cursor-pointer hover:bg-charcoal/10 transition-all"
+                    >
+                      Choose File
+                    </label>
+                    <p className="text-[10px] font-bold text-charcoal/30 uppercase tracking-widest mt-3">Recommended: 256x256px. Max 2MB.</p>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium leading-none flex items-center gap-2">
-                  <ImagePlus className="w-4 h-4 text-zinc-500" />
-                  Screenshots
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-charcoal/40 uppercase tracking-widest px-1">
+                  Visual Showcase
                 </label>
-                <Input 
+                <input 
                   type="file" 
                   accept="image/*" 
                   multiple 
                   onChange={handleScreenshotsChange}
-                  className="cursor-pointer"
+                  className="hidden"
+                  id="screenshots-upload"
                 />
-                <p className="text-xs text-zinc-500">Upload up to 5 screenshots showing off your app.</p>
+                <label 
+                  htmlFor="screenshots-upload"
+                  className="flex items-center justify-center w-full h-32 rounded-[24px] border-2 border-charcoal/5 border-dashed bg-charcoal/[0.02] text-charcoal/30 text-xs font-bold uppercase tracking-widest cursor-pointer hover:bg-charcoal/5 hover:border-charcoal/10 transition-all group"
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <ImagePlus className="w-8 h-8 group-hover:scale-110 transition-transform" />
+                    <span>Upload up to 5 screenshots</span>
+                  </div>
+                </label>
                 
                 {screenshotPreviews.length > 0 && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 mt-8">
                     {screenshotPreviews.map((preview, index) => (
-                      <div key={index} className="relative aspect-video rounded-lg border border-zinc-200 overflow-hidden">
+                      <div key={index} className="relative aspect-video rounded-2xl border-4 border-white shadow-xl overflow-hidden bg-charcoal/5">
                         <img src={preview} alt={`Screenshot ${index + 1}`} className="w-full h-full object-cover" />
                         <button 
                           type="button"
                           onClick={() => removeScreenshot(index)}
-                          className="absolute top-1 right-1 bg-black/50 text-white p-1 rounded-md hover:bg-black/70"
+                          className="absolute top-2 right-2 bg-charcoal/80 text-white p-1.5 rounded-lg hover:bg-charcoal"
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-4 h-4" />
                         </button>
                       </div>
                     ))}
@@ -385,13 +427,17 @@ export function SubmitApp() {
                 )}
               </div>
             </div>
+          </div>
 
-            <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-              {isSubmitting ? 'Launching App...' : 'Launch App'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          <button 
+            type="submit" 
+            className="w-full h-16 rounded-[24px] bg-charcoal text-offwhite text-sm font-bold uppercase tracking-[0.2em] shadow-2xl shadow-charcoal/20 hover:bg-charcoal/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Deploying Artifact...' : 'Deploy Artifact'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

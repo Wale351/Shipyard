@@ -1,1 +1,95 @@
 @import "tailwindcss";
+
+@theme {
+  --color-offwhite: #F9F9F9;
+  --color-charcoal: #1A1A1A;
+  --color-cobalt: #3F51FF;
+  --color-terracotta: #E07B72;
+  
+  /* Oceanic Palette */
+  --color-ocean-deep: #001219;
+  --color-ocean-mid: #005F73;
+  --color-ocean-light: #94D2BD;
+  --color-ocean-accent: #EE9B00;
+  
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+}
+
+@layer base {
+  body {
+    @apply bg-offwhite text-charcoal antialiased transition-colors duration-500;
+  }
+}
+
+/* Theme Overrides */
+.theme-oceanic {
+  --color-offwhite: #E9D8A6;
+  --color-charcoal: #001219;
+  --color-cobalt: #005F73;
+}
+
+/* Wavy Background Animation */
+.wave-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600' preserveAspectRatio='none'%3E%3Cpath d='M0,400 C150,300 350,500 500,400 C650,300 800,400 800,400 L800,600 L0,600 Z' fill='%23005F73' fill-opacity='0.1'/%3E%3C/svg%3E");
+  background-size: 50% 100%;
+  animation: wave-move 20s linear infinite;
+}
+
+.wave-2 {
+  animation: wave-move 15s linear infinite reverse;
+  opacity: 0.5;
+  height: 90%;
+}
+
+.wave-3 {
+  animation: wave-move 25s linear infinite;
+  opacity: 0.3;
+  height: 80%;
+}
+
+@keyframes wave-move {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Interactive Background Dots */
+.interactive-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 95, 115, 0.1) 0%, transparent 50%);
+}
+
+/* Noise Texture Overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}

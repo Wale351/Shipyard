@@ -127,79 +127,78 @@ export function Leaderboard() {
   });
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-12">
-      <div className="text-center space-y-4 py-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 text-amber-600 mb-2">
-          <Trophy className="w-8 h-8" />
+    <div className="max-w-4xl mx-auto space-y-16 pb-24 pt-12">
+      <div className="text-center space-y-6 py-12">
+        <div className="inline-flex items-center justify-center w-24 h-24 rounded-[32px] bg-amber-100 text-amber-600 mb-4 shadow-2xl shadow-amber-200/50 rotate-3">
+          <Trophy className="w-12 h-12" />
         </div>
-        <h1 className="text-4xl font-bold tracking-tight text-zinc-900">Top Builders</h1>
-        <p className="text-lg text-zinc-500 max-w-2xl mx-auto">
-          Discover the most prolific and highly-rated creators on Shipyard.
+        <h1 className="text-6xl font-bold tracking-tighter text-charcoal">The Vanguard</h1>
+        <p className="text-xl text-charcoal/40 max-w-2xl mx-auto font-medium">
+          The most prolific and highly-rated creators in the shipyard.
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-zinc-200 shadow-sm">
-        <div className="text-sm font-medium text-zinc-500 uppercase tracking-wider">Rank by</div>
-        <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
-          <Button 
-            variant={sortBy === 'upvotes' ? 'default' : 'outline'} 
-            size="sm" 
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 bg-charcoal/5 p-2 rounded-2xl">
+        <div className="flex items-center gap-1 w-full">
+          <button 
             onClick={() => setSortBy('upvotes')}
-            className="rounded-full gap-2 whitespace-nowrap"
+            className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+              sortBy === 'upvotes' ? 'bg-white text-charcoal shadow-sm' : 'text-charcoal/40 hover:text-charcoal'
+            }`}
           >
-            <Star className="w-4 h-4" /> Total Upvotes
-          </Button>
-          <Button 
-            variant={sortBy === 'apps' ? 'default' : 'outline'} 
-            size="sm" 
+            <Star className="w-4 h-4" /> Upvotes
+          </button>
+          <button 
             onClick={() => setSortBy('apps')}
-            className="rounded-full gap-2 whitespace-nowrap"
+            className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+              sortBy === 'apps' ? 'bg-white text-charcoal shadow-sm' : 'text-charcoal/40 hover:text-charcoal'
+            }`}
           >
-            <Layers className="w-4 h-4" /> Apps Created
-          </Button>
-          <Button 
-            variant={sortBy === 'engagement' ? 'default' : 'outline'} 
-            size="sm" 
+            <Layers className="w-4 h-4" /> Creations
+          </button>
+          <button 
             onClick={() => setSortBy('engagement')}
-            className="rounded-full gap-2 whitespace-nowrap"
+            className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+              sortBy === 'engagement' ? 'bg-white text-charcoal shadow-sm' : 'text-charcoal/40 hover:text-charcoal'
+            }`}
           >
             <MessageSquare className="w-4 h-4" /> Engagement
-          </Button>
+          </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[40px] border border-charcoal/5 shadow-2xl shadow-charcoal/5 overflow-hidden">
         {loading ? (
-          <div className="divide-y divide-zinc-100">
+          <div className="divide-y divide-charcoal/5">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="p-6 flex items-center gap-4 animate-pulse">
-                <div className="w-8 h-8 bg-zinc-100 rounded-full" />
-                <div className="w-12 h-12 bg-zinc-100 rounded-full" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-zinc-100 rounded w-32" />
-                  <div className="h-3 bg-zinc-100 rounded w-24" />
+              <div key={i} className="p-8 flex items-center gap-6 animate-pulse">
+                <div className="w-10 h-10 bg-charcoal/5 rounded-full" />
+                <div className="w-16 h-16 bg-charcoal/5 rounded-2xl" />
+                <div className="flex-1 space-y-3">
+                  <div className="h-5 bg-charcoal/5 rounded w-40" />
+                  <div className="h-4 bg-charcoal/5 rounded w-24" />
                 </div>
-                <div className="w-24 h-8 bg-zinc-100 rounded-full" />
+                <div className="w-28 h-10 bg-charcoal/5 rounded-xl" />
               </div>
             ))}
           </div>
         ) : (
-          <div className="divide-y divide-zinc-100">
+          <div className="divide-y divide-charcoal/5">
             {sortedBuilders.map((builder, index) => (
               <Link 
                 key={builder.id} 
                 to={`/profile/${builder.username}`}
-                className="flex items-center gap-4 sm:gap-6 p-4 sm:p-6 hover:bg-zinc-50 transition-colors group"
+                className="flex items-center gap-6 sm:gap-10 p-8 sm:p-10 hover:bg-charcoal/[0.02] transition-all group"
               >
-                <div className="flex items-center justify-center w-8 sm:w-12 shrink-0">
+                <div className="flex items-center justify-center w-12 shrink-0">
                   {index === 0 ? (
-                    <Medal className="w-8 h-8 text-amber-400 drop-shadow-sm" />
+                    <Medal className="w-10 h-10 text-amber-400 drop-shadow-xl" />
                   ) : index === 1 ? (
-                    <Medal className="w-7 h-7 text-zinc-400 drop-shadow-sm" />
+                    <Medal className="w-9 h-9 text-charcoal/20 drop-shadow-xl" />
                   ) : index === 2 ? (
-                    <Medal className="w-6 h-6 text-amber-700 drop-shadow-sm" />
+                    <Medal className="w-8 h-8 text-amber-700/40 drop-shadow-xl" />
                   ) : (
-                    <span className="text-lg font-bold text-zinc-400">#{index + 1}</span>
+                    <span className="text-xl font-bold text-charcoal/10">#{index + 1}</span>
                   )}
                 </div>
 
@@ -208,36 +207,36 @@ export function Leaderboard() {
                     <img 
                       src={builder.avatar} 
                       alt={builder.username} 
-                      className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-white shadow-sm"
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-4 border-white shadow-xl group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-zinc-100 flex items-center justify-center border-2 border-white shadow-sm">
-                      <UserIcon className="w-6 h-6 text-zinc-400" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-charcoal/5 flex items-center justify-center border-4 border-white shadow-xl">
+                      <UserIcon className="w-8 h-8 text-charcoal/20" />
                     </div>
                   )}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-bold text-zinc-900 truncate group-hover:text-indigo-600 transition-colors">
+                  <h3 className="text-2xl font-bold text-charcoal truncate group-hover:text-cobalt transition-colors">
                     {builder.username}
                   </h3>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-zinc-500">
-                    <span className="flex items-center gap-1">
-                      <Layers className="w-3.5 h-3.5" />
+                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-2 text-sm font-bold text-charcoal/30 uppercase tracking-widest">
+                    <span className="flex items-center gap-2">
+                      <Layers className="w-4 h-4" />
                       {builder.totalApps} {builder.totalApps === 1 ? 'app' : 'apps'}
                     </span>
-                    <span className="flex items-center gap-1">
-                      <MessageSquare className="w-3.5 h-3.5" />
+                    <span className="flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4" />
                       {builder.engagement} engagement
                     </span>
                   </div>
                 </div>
 
                 <div className="shrink-0 text-right">
-                  <div className="flex items-center gap-1.5 bg-zinc-100 px-3 py-1.5 rounded-full">
-                    <Star className="w-4 h-4 text-zinc-700" />
-                    <span className="font-bold text-zinc-900">{builder.totalUpvotes}</span>
+                  <div className="flex items-center gap-2 bg-cobalt/5 px-4 py-2 rounded-xl text-cobalt">
+                    <Star className="w-5 h-5 fill-cobalt/10" />
+                    <span className="font-bold text-xl">{builder.totalUpvotes}</span>
                   </div>
                 </div>
               </Link>

@@ -7,6 +7,7 @@ export interface User {
   website_url?: string;
   twitter_handle?: string;
   github_handle?: string;
+  location?: string;
   role?: string;
   created_at: string;
 }

@@ -6,6 +6,7 @@ import { Button } from '../components/ui/Button';
 import { Github, Twitter, Globe, MapPin, Calendar, ArrowUp, Users, Layers } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { App, User } from '../types';
+import { AppCard } from '../components/ui/AppCard';
 
 export function Profile() {
   const { username } = useParams();
@@ -184,20 +185,27 @@ export function Profile() {
   const isOwnProfile = currentUser?.id === profile.id;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-12 pb-24">
+    <div className="max-w-5xl mx-auto space-y-16 pb-24 pt-12">
       {/* Profile Header */}
-      <div className="flex flex-col md:flex-row gap-8 items-start bg-white p-8 rounded-3xl border border-zinc-100 shadow-sm">
-        <img 
-          src={profile.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.username}`} 
-          alt={profile.username} 
-          className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md bg-zinc-50 shrink-0"
-          referrerPolicy="no-referrer"
-        />
-        <div className="space-y-5 flex-1 w-full">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-zinc-900">{profile.username}</h1>
-              <p className="text-lg text-zinc-500 font-medium">@{profile.username}</p>
+      <div className="flex flex-col md:flex-row gap-12 items-start bg-white p-10 md:p-12 rounded-[40px] border border-charcoal/5 shadow-2xl shadow-charcoal/5">
+        <div className="relative shrink-0">
+          <img 
+            src={profile.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.username}`} 
+            alt={profile.username} 
+            className="w-40 h-40 rounded-[32px] object-cover border-4 border-white shadow-2xl bg-charcoal/5"
+            referrerPolicy="no-referrer"
+          />
+          {isOwnProfile && (
+            <div className="absolute -top-3 -right-3 bg-cobalt text-offwhite px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl">
+              Owner
+            </div>
+          )}
+        </div>
+        <div className="space-y-8 flex-1 w-full">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div className="space-y-1">
+              <h1 className="text-5xl font-bold tracking-tighter text-charcoal">{profile.username}</h1>
+              <p className="text-xl text-charcoal/40 font-bold uppercase tracking-[0.2em]">@{profile.username}</p>
             </div>
             
             {!isOwnProfile && (
@@ -205,43 +213,48 @@ export function Profile() {
                 onClick={handleToggleFollow}
                 disabled={isTogglingFollow}
                 variant={isFollowing ? "outline" : "default"}
-                className={`rounded-full px-8 ${isFollowing ? 'hover:bg-red-50 hover:text-red-600 hover:border-red-200' : ''}`}
+                className={`rounded-2xl h-14 px-10 text-sm font-bold uppercase tracking-widest transition-all ${
+                  isFollowing 
+                    ? 'border-charcoal/10 text-charcoal hover:bg-red-50 hover:text-red-600 hover:border-red-100' 
+                    : 'bg-charcoal text-offwhite hover:bg-charcoal/90 shadow-xl shadow-charcoal/10'
+                }`}
               >
                 {isFollowing ? 'Following' : 'Follow'}
               </Button>
             )}
-            {isOwnProfile && (
-              <Badge variant="secondary" className="px-3 py-1 rounded-full bg-zinc-100 text-zinc-600">
-                This is you
-              </Badge>
-            )}
           </div>
           
           {profile.bio && (
-            <p className="text-zinc-700 max-w-2xl leading-relaxed">{profile.bio}</p>
+            <p className="text-xl text-charcoal/60 max-w-2xl leading-relaxed font-medium">{profile.bio}</p>
           )}
           
-          <div className="flex flex-wrap gap-4 text-sm text-zinc-500 font-medium">
-            <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap gap-8 text-xs font-bold text-charcoal/30 uppercase tracking-widest">
+            <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               Joined {new Date(profile.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
             </div>
+            {profile.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                {profile.location}
+              </div>
+            )}
           </div>
           
-          <div className="flex gap-4 pt-2">
+          <div className="flex gap-6 pt-2">
             {profile.website_url && (
-              <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-zinc-900 transition-colors">
-                <Globe className="w-5 h-5" />
+              <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="text-charcoal/20 hover:text-cobalt transition-all transform hover:scale-110">
+                <Globe className="w-6 h-6" />
               </a>
             )}
             {profile.github_handle && (
-              <a href={`https://github.com/${profile.github_handle}`} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-zinc-900 transition-colors">
-                <Github className="w-5 h-5" />
+              <a href={`https://github.com/${profile.github_handle}`} target="_blank" rel="noopener noreferrer" className="text-charcoal/20 hover:text-charcoal transition-all transform hover:scale-110">
+                <Github className="w-6 h-6" />
               </a>
             )}
             {profile.twitter_handle && (
-              <a href={`https://twitter.com/${profile.twitter_handle}`} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-zinc-900 transition-colors">
-                <Twitter className="w-5 h-5" />
+              <a href={`https://twitter.com/${profile.twitter_handle}`} target="_blank" rel="noopener noreferrer" className="text-charcoal/20 hover:text-sky-500 transition-all transform hover:scale-110">
+                <Twitter className="w-6 h-6" />
               </a>
             )}
           </div>
@@ -249,63 +262,47 @@ export function Profile() {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-3 gap-4 md:gap-8">
-        <div className="bg-white p-6 rounded-2xl border border-zinc-100 shadow-sm flex flex-col items-center justify-center text-center">
-          <Layers className="w-6 h-6 text-zinc-400 mb-2" />
-          <div className="text-3xl font-bold text-zinc-900">{apps.length}</div>
-          <div className="text-sm font-medium text-zinc-500 mt-1">Apps Built</div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+        <div className="bg-white p-10 rounded-[32px] border border-charcoal/5 shadow-2xl shadow-charcoal/5 flex flex-col items-center justify-center text-center group hover:border-cobalt/20 transition-all">
+          <Layers className="w-8 h-8 text-charcoal/10 mb-4 group-hover:text-cobalt transition-colors" />
+          <div className="text-5xl font-bold text-charcoal tracking-tighter">{apps.length}</div>
+          <div className="text-xs font-bold text-charcoal/30 mt-2 uppercase tracking-widest">Creations</div>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-zinc-100 shadow-sm flex flex-col items-center justify-center text-center">
-          <ArrowUp className="w-6 h-6 text-zinc-400 mb-2" />
-          <div className="text-3xl font-bold text-zinc-900">{totalUpvotes}</div>
-          <div className="text-sm font-medium text-zinc-500 mt-1">Total Upvotes</div>
+        <div className="bg-white p-10 rounded-[32px] border border-charcoal/5 shadow-2xl shadow-charcoal/5 flex flex-col items-center justify-center text-center group hover:border-cobalt/20 transition-all">
+          <ArrowUp className="w-8 h-8 text-charcoal/10 mb-4 group-hover:text-cobalt transition-colors" />
+          <div className="text-5xl font-bold text-charcoal tracking-tighter">{totalUpvotes}</div>
+          <div className="text-xs font-bold text-charcoal/30 mt-2 uppercase tracking-widest">Upvotes</div>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-zinc-100 shadow-sm flex flex-col items-center justify-center text-center">
-          <Users className="w-6 h-6 text-zinc-400 mb-2" />
-          <div className="text-3xl font-bold text-zinc-900">{followersCount}</div>
-          <div className="text-sm font-medium text-zinc-500 mt-1">Followers</div>
+        <div className="bg-white p-10 rounded-[32px] border border-charcoal/5 shadow-2xl shadow-charcoal/5 flex flex-col items-center justify-center text-center group hover:border-cobalt/20 transition-all">
+          <Users className="w-8 h-8 text-charcoal/10 mb-4 group-hover:text-cobalt transition-colors" />
+          <div className="text-5xl font-bold text-charcoal tracking-tighter">{followersCount}</div>
+          <div className="text-xs font-bold text-charcoal/30 mt-2 uppercase tracking-widest">Followers</div>
         </div>
       </div>
 
       {/* Apps Grid */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold tracking-tight text-zinc-900 flex items-center gap-2">
-          Apps by {profile.username}
-        </h2>
+      <div className="space-y-10">
+        <div className="flex items-center gap-4">
+          <div className="w-2 h-8 bg-cobalt rounded-full" />
+          <h2 className="text-3xl font-bold tracking-tight text-charcoal">
+            Portfolio
+          </h2>
+        </div>
         
         {apps.length === 0 ? (
-          <div className="text-center py-16 bg-zinc-50 rounded-3xl border border-zinc-100 border-dashed">
-            <p className="text-zinc-500 text-lg">No apps built yet.</p>
+          <div className="text-center py-24 bg-charcoal/[0.02] rounded-[48px] border border-charcoal/5 border-dashed">
+            <p className="text-charcoal/30 font-bold uppercase tracking-widest text-sm">No artifacts deployed yet</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {apps.map((app) => (
-              <Link key={app.id} to={`/app/${app.id}`} className="group flex flex-col h-full bg-white rounded-2xl border border-zinc-100 shadow-sm hover:shadow-md hover:border-zinc-300 transition-all overflow-hidden">
-                <div className="aspect-video w-full overflow-hidden bg-zinc-100 relative">
-                  <img 
-                    src={app.logo_url || `https://picsum.photos/seed/${app.id}/400/300`} 
-                    alt={app.name} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1 text-xs font-bold text-zinc-900 shadow-sm">
-                    <ArrowUp className="w-3 h-3" /> {app.votes_count || 0}
-                  </div>
-                </div>
-                <div className="p-5 flex flex-col flex-1">
-                  <h3 className="text-lg font-bold text-zinc-900 mb-1">{app.name}</h3>
-                  <p className="text-sm text-zinc-500 line-clamp-2 mb-4 flex-1">
-                    {app.tagline || app.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-zinc-50">
-                    {app.category && (
-                      <Badge variant="secondary" className="bg-zinc-100 text-zinc-600 hover:bg-zinc-200">
-                        {app.category.name}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </Link>
+              <AppCard 
+                key={app.id} 
+                app={app} 
+                isVoted={false} // Simplified for profile view
+                onVote={() => {}} 
+                isVoting={false}
+              />
             ))}
           </div>
         )}
